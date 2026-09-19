@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { useRef, useMemo, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, Text } from "@react-three/drei";
 import { EffectComposer, N8AO } from "@react-three/postprocessing";
@@ -41,7 +41,6 @@ function TechSphere({ text, isActive, color }: SphereProps) {
     
     // Apply a soft force towards the center-bottom to keep them clustered
     const translation = api.current.translation();
-    const distanceToCenter = Math.sqrt(translation.x ** 2 + translation.z ** 2);
     
     // Create a bowl shape: push towards center horizontally, and push down if too high, push up if too low
     const targetY = -2; // Bottom of the bowl
@@ -208,7 +207,7 @@ const TechStack = () => {
         {/* Adds beautiful studio lighting reflections to the glass material */}
         <Environment preset="city" />
         
-        <EffectComposer disableNormalPass>
+        <EffectComposer>
           <N8AO color="#0f002c" aoRadius={2} intensity={1} />
         </EffectComposer>
       </Canvas>

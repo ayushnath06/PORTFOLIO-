@@ -85,8 +85,10 @@ const featuredProjects = [
 const Work = () => {
   useGSAP(() => {
     function getScrollAmount() {
-      const workFlex = document.querySelector(".work-flex")! as HTMLElement;
-      return workFlex.scrollWidth - window.innerWidth;
+      const workBoxes = Array.from(document.querySelectorAll(".work-box")) as HTMLElement[];
+      const totalWidth = workBoxes.reduce((acc, box) => acc + box.offsetWidth, 0);
+      const padding = 120; // matching padding-right in CSS
+      return Math.max(0, totalWidth + padding - window.innerWidth);
     }
 
     let timeline = gsap.timeline({

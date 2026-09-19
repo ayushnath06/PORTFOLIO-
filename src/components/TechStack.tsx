@@ -1,120 +1,147 @@
 import * as THREE from "three";
 import { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment } from "@react-three/drei";
+import { Environment, Text } from "@react-three/drei";
 import { EffectComposer, N8AO } from "@react-three/postprocessing";
 import {
   BallCollider,
   Physics,
   RigidBody,
-  CylinderCollider,
   RapierRigidBody,
 } from "@react-three/rapier";
+import "./styles/TechStack.css";
 
-const textureLoader = new THREE.TextureLoader();
-const imageUrls = [
-  "/images/react2.webp",
-  "/images/next2.webp",
-  "/images/node2.webp",
-  "/images/express.webp",
-  "/images/mongo.webp",
-  "/images/mysql.webp",
-  "/images/typescript.webp",
-  "/images/javascript.webp",
+const techSkills = [
+  "C",
+  "C++",
+  "Python",
+  "HTML",
+  "CSS",
+  "JavaScript",
+  "Git",
+  "GitHub",
+  // Duplicating a few to fill the bowl and make it look dense, as requested by 'closer' and 'circles'
+  "C", "Python", "JavaScript", "HTML", "CSS", "Git", "GitHub", "C++"
 ];
-const textures = imageUrls.map((url) => textureLoader.load(url));
 
-const sphereGeometry = new THREE.SphereGeometry(1, 28, 28);
-
-const spheres = [...Array(30)].map(() => ({
-  scale: [0.7, 1, 0.8, 1, 1][Math.floor(Math.random() * 5)],
-}));
+const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
 
 type SphereProps = {
-  vec?: THREE.Vector3;
-  scale: number;
-  r?: typeof THREE.MathUtils.randFloatSpread;
-  material: THREE.MeshPhysicalMaterial;
+  text: string;
   isActive: boolean;
+  color: string;
 };
 
-function SphereGeo({
-  vec = new THREE.Vector3(),
-  scale,
-  r = THREE.MathUtils.randFloatSpread,
-  material,
-  isActive,
-}: SphereProps) {
+function TechSphere({ text, isActive, color }: SphereProps) {
   const api = useRef<RapierRigidBody | null>(null);
 
+  // Soft boundary / Hemisphere effect
   useFrame((_state, delta) => {
-    if (!isActive) return;
-    delta = Math.min(0.1, delta);
-    const impulse = vec
-      .copy(api.current!.translation())
-      .normalize()
-      .multiply(
-        new THREE.Vector3(
-          -50 * delta * scale,
-          -150 * delta * scale,
-          -50 * delta * scale
-        )
-      );
+    if (!isActive || !api.current) return;
+    
+    // Apply a soft force towards the center-bottom to keep them clustered
+    const translation = api.current.translation();
+    const distanceToCenter = Math.sqrt(translation.x ** 2 + translation.z ** 2);
+    
+    // Create a bowl shape: push towards center horizontally, and push down if too high, push up if too low
+    const targetY = -2; // Bottom of the bowl
+    
+    const force = new THREE.Vector3(
+      -translation.x * 2,           // pull to horizontal center
+      (targetY - translation.y) * 4, // pull to target height
+      -translation.z * 2            // pull to horizontal center
+    );
 
-    api.current?.applyImpulse(impulse, true);
+    // Apply a subtle rotation for dynamic feel
+    api.current.applyTorqueImpulse(
+      new THREE.Vector3(
+        (Math.random() - 0.5) * 0.1,
+        (Math.random() - 0.5) * 0.1,
+        (Math.random() - 0.5) * 0.1
+      ),
+      true
+    );
+
+    api.current.applyImpulse(force.multiplyScalar(delta * 2), true);
   });
 
   return (
     <RigidBody
-      linearDamping={0.75}
-      angularDamping={0.15}
-      friction={0.2}
-      position={[r(20), r(20) - 25, r(20) - 10]}
       ref={api}
+      linearDamping={1.5}
+      angularDamping={0.5}
+      friction={0.2}
+      restitution={0.7}
+      position={[
+        THREE.MathUtils.randFloatSpread(10),
+        THREE.MathUtils.randFloat(0, 10),
+        THREE.MathUtils.randFloatSpread(10)
+      ]}
       colliders={false}
     >
-      <BallCollider args={[scale]} />
-      <CylinderCollider
-        rotation={[Math.PI / 2, 0, 0]}
-        position={[0, 0, 1.2 * scale]}
-        args={[0.15 * scale, 0.275 * scale]}
-      />
-      <mesh
-        castShadow
-        receiveShadow
-        scale={scale}
-        geometry={sphereGeometry}
-        material={material}
-        rotation={[0.3, 1, 1]}
-      />
+      <BallCollider args={[1]} />
+      <mesh castShadow receiveShadow geometry={sphereGeometry}>
+        <meshPhysicalMaterial
+          color={color}
+          metalness={0.2}
+          roughness={0.1}
+          transmission={0.8}
+          ior={1.5}
+          thickness={1.5}
+          clearcoat={1}
+        />
+      </mesh>
+      {/* 2 Sided Text so it can be seen from both sides as it rotates */}
+      <Text
+        position={[0, 0, 1.01]}
+        fontSize={0.4}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+        outlineWidth={0.02}
+        outlineColor="#000000"
+      >
+        {text}
+      </Text>
+      <Text
+        position={[0, 0, -1.01]}
+        rotation={[0, Math.PI, 0]}
+        fontSize={0.4}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+        outlineWidth={0.02}
+        outlineColor="#000000"
+      >
+        {text}
+      </Text>
     </RigidBody>
   );
 }
 
 type PointerProps = {
-  vec?: THREE.Vector3;
   isActive: boolean;
 };
 
-function Pointer({ vec = new THREE.Vector3(), isActive }: PointerProps) {
+function Pointer({ isActive }: PointerProps) {
   const ref = useRef<RapierRigidBody>(null);
 
   useFrame(({ pointer, viewport }) => {
-    if (!isActive) return;
-    const targetVec = vec.lerp(
-      new THREE.Vector3(
-        (pointer.x * viewport.width) / 2,
-        (pointer.y * viewport.height) / 2,
-        0
-      ),
-      0.2
+    if (!isActive || !ref.current) return;
+    
+    // Map mouse position to 3D space
+    const targetVec = new THREE.Vector3(
+      (pointer.x * viewport.width) / 2,
+      (pointer.y * viewport.height) / 2,
+      0 // keep the pointer on the Z=0 plane
     );
-    ref.current?.setNextKinematicTranslation(targetVec);
+    
+    ref.current.setNextKinematicTranslation(targetVec);
   });
 
   return (
     <RigidBody
-      position={[100, 100, 100]}
+      position={[0, -10, 0]}
       type="kinematicPosition"
       colliders={false}
       ref={ref}
@@ -130,81 +157,59 @@ const TechStack = () => {
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY || document.documentElement.scrollTop;
-      const threshold = document
-        .getElementById("work")!
-        .getBoundingClientRect().top;
-      setIsActive(scrollY > threshold);
+      const workSection = document.getElementById("work");
+      if (workSection) {
+        const threshold = workSection.getBoundingClientRect().top;
+        setIsActive(scrollY > threshold);
+      }
     };
-    document.querySelectorAll(".header a").forEach((elem) => {
-      const element = elem as HTMLAnchorElement;
-      element.addEventListener("click", () => {
-        const interval = setInterval(() => {
-          handleScroll();
-        }, 10);
-        setTimeout(() => {
-          clearInterval(interval);
-        }, 1000);
-      });
-    });
+    
     window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-  const materials = useMemo(() => {
-    return textures.map(
-      (texture) =>
-        new THREE.MeshPhysicalMaterial({
-          map: texture,
-          emissive: "#ffffff",
-          emissiveMap: texture,
-          emissiveIntensity: 0.3,
-          metalness: 0.5,
-          roughness: 1,
-          clearcoat: 0.1,
-        })
-    );
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Premium color palette for the glass spheres
+  const colors = ["#4f46e5", "#ec4899", "#06b6d4", "#8b5cf6", "#f59e0b"];
+
   return (
-    <div className="techstack">
-      <h2> My Techstack</h2>
+    <div className="techstack" id="techstack">
+      <h2>Tech Stack</h2>
 
       <Canvas
         shadows
-        gl={{ alpha: true, stencil: false, depth: false, antialias: false }}
-        camera={{ position: [0, 0, 20], fov: 32.5, near: 1, far: 100 }}
-        onCreated={(state) => (state.gl.toneMappingExposure = 1.5)}
+        gl={{ alpha: true, antialias: true }}
+        camera={{ position: [0, 0, 20], fov: 35, near: 1, far: 100 }}
         className="tech-canvas"
       >
-        <ambientLight intensity={1} />
+        <ambientLight intensity={1.5} />
         <spotLight
           position={[20, 20, 25]}
           penumbra={1}
           angle={0.2}
           color="white"
           castShadow
-          shadow-mapSize={[512, 512]}
+          intensity={2}
+          shadow-mapSize={[1024, 1024]}
         />
-        <directionalLight position={[0, 5, -4]} intensity={2} />
+        <directionalLight position={[-10, -10, -10]} intensity={1} color="#4f46e5" />
+        
         <Physics gravity={[0, 0, 0]}>
           <Pointer isActive={isActive} />
-          {spheres.map((props, i) => (
-            <SphereGeo
+          {techSkills.map((tech, i) => (
+            <TechSphere
               key={i}
-              {...props}
-              material={materials[Math.floor(Math.random() * materials.length)]}
+              text={tech}
+              color={colors[i % colors.length]}
               isActive={isActive}
             />
           ))}
         </Physics>
-        <Environment
-          files="/models/char_enviorment.hdr"
-          environmentIntensity={0.5}
-          environmentRotation={[0, 4, 2]}
-        />
-        <EffectComposer enableNormalPass={false}>
-          <N8AO color="#0f002c" aoRadius={2} intensity={1.15} />
+        
+        {/* Adds beautiful studio lighting reflections to the glass material */}
+        <Environment preset="city" />
+        
+        <EffectComposer disableNormalPass>
+          <N8AO color="#0f002c" aoRadius={2} intensity={1} />
         </EffectComposer>
       </Canvas>
     </div>

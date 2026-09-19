@@ -6,9 +6,9 @@ const About = () => {
       <div className="about-me">
         <h3 className="title">About Me</h3>
         <p className="para">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic quis
-          dolores numquam iusto Ratione earum ducimus autem id iure pariatur
-          dolorum quae maiores.
+          I'm a BTech CSE undergrad at JECRC University based in Jaipur, Rajasthan with a strong passion for startups, software development, hardware/embedded systems, and community-led growth.
+          As a Core Team Member at the JECRC Incubation Centre, Google Gemini Student Ambassador '26, and Campus Representative for multiple IIT E-Cells (IIT Bombay, IIT Delhi, IIT Kanpur, IIT Roorkee), I thrive at the intersection of technology, innovation, and people.
+          I enjoy organizing events, contributing to open source, building impactful projects, and learning by building.
         </p>
       </div>
     </div>

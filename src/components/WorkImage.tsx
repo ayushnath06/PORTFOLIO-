@@ -6,11 +6,13 @@ interface Props {
   alt?: string;
   video?: string;
   link?: string;
+  gallery?: string[];
 }
 
 const WorkImage = (props: Props) => {
   const [isVideo, setIsVideo] = useState(false);
   const [video, setVideo] = useState("");
+
   const handleMouseEnter = async () => {
     if (props.video) {
       setIsVideo(true);
@@ -21,17 +23,24 @@ const WorkImage = (props: Props) => {
     }
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (props.gallery && props.gallery.length > 0) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <div className="work-image">
       <a
         className="work-image-in"
-        href={props.link}
+        href={props.link || "#"}
+        onClick={handleClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={() => setIsVideo(false)}
-        target="_blank"
+        target={props.gallery ? "_self" : "_blank"}
         data-cursor={"disable"}
       >
-        {props.link && (
+        {(props.link || (props.gallery && props.gallery.length > 0)) && (
           <div className="work-link">
             <MdArrowOutward />
           </div>

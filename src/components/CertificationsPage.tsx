@@ -7,19 +7,19 @@ const images = [
   "/images/IITD RL.png",
   "/images/IITK OL.png",
   "/images/IITR OL.png",
-  "/images/INNOV8 VC.png",
+  "/images/INNOV8 Volunteer Certificate.png",
   "/images/JIC OL.png",
   "/images/MKS C.png",
   "/images/NITD C.png"
 ];
 
 const labels = [
-  "Main Certificate",
+  "Certificates are Here",
   "GSSoC 2026",
   "IIT Delhi – Recognition Letter",
   "IIT Kanpur – Offer Letter",
   "IIT Roorkee – Offer Letter",
-  "Innov8 VC",
+  "INNOV8 Volunteer Certificate",
   "JIC – Offer Letter",
   "MKS Certificate",
   "NIT Delhi Certificate"

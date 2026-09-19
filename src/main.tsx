@@ -6,7 +6,7 @@ import "./index.css";
 
 const root = createRoot(document.getElementById("root")!);
 
-if (window.location.pathname === "/certifications") {
+if (window.location.pathname === "/certifications" || window.location.pathname === "/Portfolio/certifications") {
   root.render(
     <StrictMode>
       <CertificationsPage />

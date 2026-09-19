@@ -6,6 +6,43 @@
 .work-section h2 > span {
   color: var(--accentColor);
 }
+.work-header-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-right: 20px;
+}
+.more-projects-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 28px;
+  border: 1px solid #363636;
+  border-radius: 100px;
+  background: transparent;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: border-color 0.3s, color 0.3s, background 0.3s;
+  letter-spacing: 0.3px;
+  margin-bottom: 10px;
+  font-family: inherit;
+}
+.more-projects-btn:hover {
+  border-color: var(--accentColor);
+  color: var(--accentColor);
+}
+.work-subtitle {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accentColor);
+  margin-top: 3px;
+  margin-bottom: 2px;
+}
 .work-section {
   transition: 0s;
   height: 100vh;

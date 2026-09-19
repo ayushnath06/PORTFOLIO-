@@ -22,8 +22,9 @@ const Contact = () => {
           <div className="contact-box">
             <h4>Social</h4>
             <a
-              href="https://github.com/in/ayushnath06"
+              href="https://github.com/ayushnath06"
               target="_blank"
+              rel="noopener noreferrer"
               data-cursor="disable"
               className="contact-social"
             >
@@ -32,6 +33,7 @@ const Contact = () => {
             <a
               href="https://linkedin.com/in/ayush-nath06"
               target="_blank"
+              rel="noopener noreferrer"
               data-cursor="disable"
               className="contact-social"
             >
@@ -40,6 +42,7 @@ const Contact = () => {
             <a
               href="https://x.com/ayushnath06"
               target="_blank"
+              rel="noopener noreferrer"
               data-cursor="disable"
               className="contact-social"
             >
@@ -48,6 +51,7 @@ const Contact = () => {
             <a
               href="https://www.instagram.com/ayushnath06"
               target="_blank"
+              rel="noopener noreferrer"
               data-cursor="disable"
               className="contact-social"
             >

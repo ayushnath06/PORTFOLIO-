@@ -29,6 +29,9 @@
 a.contact-social {
   font-size: 25px;
   border-bottom: 1px solid #ccc;
+  position: relative;
+  z-index: 10;
+  cursor: pointer;
 }
 .contact-box h2 {
   font-weight: 400;
